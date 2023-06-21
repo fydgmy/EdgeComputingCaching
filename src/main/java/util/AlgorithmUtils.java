@@ -7,6 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class AlgorithmUtils {
@@ -41,37 +42,55 @@ public class AlgorithmUtils {
         double distance = Math.sqrt(dx * dx + dy * dy);
         return distance;
     }
-
-    public static Map<Integer, Map<Integer, Double>> getDataSimilarityMap(Map<Integer,double[]> dataVectorMap) {
-        Map<Integer, ArrayList<Double>> similarDataMap = new HashMap<>();
-        // 遍历每个数据对象
-        for (Map.Entry<Integer, double[]> entry : dataVectorMap.entrySet()) {
-            int dataId = entry.getKey();
-            double[] currentVector = entry.getValue();
-            ArrayList<Double> similarDataList = new ArrayList<>();
-            // 遍历其他数据对象进行相似度计算
-            for (Map.Entry<Integer, double[]> otherEntry : dataVectorMap.entrySet()) {
-                int otherDataId = otherEntry.getKey();
-                double[] otherVector = otherEntry.getValue();
-                if (dataId != otherDataId) {  // 排除当前数据对象自身
-                    double similarity = calculateCosSim(currentVector, otherVector);
-                    if (similarity > 0.5) {
-                        similarDataList.add(otherDataId);
-                    }
+    //根据经度纬度的距离计算，确定用户请求哪个边缘服务器
+    public Map<Integer,Integer> userEdge(List<User> users,List<EdgeServer> servers){
+        Map<Integer,Integer> uedistance=new HashMap<Integer, Integer>();
+        for(User user:users)
+        {
+            double mindistance=10000000.0;
+            int meid=0;
+            for(EdgeServer server:servers){
+                double tempdistance=0;
+                tempdistance=calculateDistance(user.getLatitude(),user.getLongitude(),server.getLatitude(),server.getLongitude());
+                if(tempdistance<mindistance){
+                    mindistance=tempdistance;
+                    meid=server.getId();
                 }
             }
-            // 根据相似度降序排序并截取前十位
-            similarDataList.sort((a, b) -> Double.compare(calculateCosSim(dataVectorMap.get(dataId), dataVectorMap.get(b)),
-                    calculateCosSim(dataVectorMap.get(dataId), dataVectorMap.get(a))));
-            if (similarDataList.size() > 10) {
-                similarDataList = new ArrayList<>(similarDataList.subList(0, 10));
-            }
-
-            similarDataMap.put(dataId, similarDataList);
+        uedistance.put(user.getId(),meid);
         }
-
-        return similarDataMap;
+        return uedistance;
     }
+//    public static Map<Integer, Map<Integer, Double>> getDataSimilarityMap(Map<Integer,double[]> dataVectorMap) {
+//        Map<Integer, ArrayList<Double>> similarDataMap = new HashMap<>();
+//        // 遍历每个数据对象
+//        for (Map.Entry<Integer, double[]> entry : dataVectorMap.entrySet()) {
+//            int dataId = entry.getKey();
+//            double[] currentVector = entry.getValue();
+//            ArrayList<Double> similarDataList = new ArrayList<>();
+//            // 遍历其他数据对象进行相似度计算
+//            for (Map.Entry<Integer, double[]> otherEntry : dataVectorMap.entrySet()) {
+//                int otherDataId = otherEntry.getKey();
+//                double[] otherVector = otherEntry.getValue();
+//                if (dataId != otherDataId) {  // 排除当前数据对象自身
+//                    double similarity = calculateCosSim(currentVector, otherVector);
+//                    if (similarity > 0.5) {
+//                        similarDataList.add(otherDataId);
+//                    }
+//                }
+//            }
+//            // 根据相似度降序排序并截取前十位
+//            similarDataList.sort((a, b) -> Double.compare(calculateCosSim(dataVectorMap.get(dataId), dataVectorMap.get(b)),
+//                    calculateCosSim(dataVectorMap.get(dataId), dataVectorMap.get(a))));
+//            if (similarDataList.size() > 10) {
+//                similarDataList = new ArrayList<>(similarDataList.subList(0, 10));
+//            }
+//
+//            similarDataMap.put(dataId, similarDataList);
+//        }
+//
+//        return similarDataMap;
+//    }
 
     private static double calculateCosSim(double[] doubles, double[] doubles1) {
         return 0;

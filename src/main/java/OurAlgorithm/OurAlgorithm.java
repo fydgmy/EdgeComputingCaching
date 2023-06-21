@@ -23,7 +23,7 @@ public class OurAlgorithm {
         this.experimentalUserList = DBUtils.getAllUser();
         this.experimentalEdgeServer = DBUtils.getAllEdgeServer();
         this.experimentalPopularData = DBUtils.getAllPopularData();
-        this.predictiveRequest = DBUtils.getAllRequestByTime("predictive_request",51,80);
+       // this.predictiveRequest = DBUtils.getAllRequestByTime("predictive_request",51,80);
         ArrayList<Integer> dataIdList = new ArrayList<Integer>();
         for(PopularData pd:this.experimentalPopularData){
             dataIdList.add(pd.getId());
@@ -31,7 +31,7 @@ public class OurAlgorithm {
         this.dataVectorMap = FileUtils.getDataVectorMap("src/AlgorithmicData/data_matrix.txt",dataIdList);
         edgeServerGraph = new EdgeServerGraph();
         edgeServerGraph.initGraph((ArrayList<EdgeServer>) this.experimentalEdgeServer);
-        dataSimilarityMap = AlgorithmUtils.getDataSimilarityMap(dataVectorMap);
+       // dataSimilarityMap = AlgorithmUtils.getDataSimilarityMap(dataVectorMap);
     }
 
 }
